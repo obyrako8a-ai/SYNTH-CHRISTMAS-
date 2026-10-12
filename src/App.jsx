@@ -69,9 +69,9 @@ const INSTRUMENTS = [
     id: 'violin',
     title: 'VIOLIN',
     presets: [
-      'SMOOTH',
-      'WARM',
-      'AIR'
+      'Мелодия_1',
+      'Мелодия_2',
+      'Мелодия_3'
     ]
   },
 
@@ -79,9 +79,9 @@ const INSTRUMENTS = [
     id: 'horn',
     title: 'LOW HORN',
     presets: [
-      'DEEP',
-      'WARM',
-      'BRIGHT'
+      'Мелодия_1',
+      'Мелодия_2',
+      'Мелодия_3'
     ]
   },
 
@@ -105,6 +105,50 @@ const INSTRUMENTS = [
     ]
   }
 ]
+
+const VIOLIN_MELODIES = {
+  'Мелодия_1': [...INITIAL_PATTERNS.violin],
+
+  // Активные клетки повторяют рисунок с присланного изображения.
+  // Число означает ряд нот сверху вниз: 0, 1, 2 или 3.
+  'Мелодия_2': [
+    2, null, 0, 1,
+    0, null, 3, 2,
+    3, null, 0, 1,
+    0, null, 2, 2
+  ],
+
+  'Мелодия_3': [
+    0, null, 2, null,
+    1, null, 3, null,
+    2, null, 0, null,
+    1, null, 3, null
+  ]
+}
+
+const HORN_MELODIES = {
+  // Мелодия_1 сохраняет исходное расположение нот LOW HORN.
+  'Мелодия_1': [...INITIAL_PATTERNS.horn],
+
+  // Мелодия_2 повторяет рисунок с нового изображения:
+  // второй ряд: шаги 1, 2, 3, 5, 6, 7, 9, 11, 13, 14, 15;
+  // нижний ряд: шаги 8 и 10.
+  'Мелодия_2': [
+    1, 1, 1, null,
+    1, 1, 1, 3,
+    1, 3, 1, null,
+    1, 1, 1, null
+  ],
+
+  // Мелодия_3 повторяет рисунок с последнего фото LOW HORN.
+  // Индексы 0–3 обозначают ряды сверху вниз.
+  'Мелодия_3': [
+    3, 2, 1, 0,
+    1, 2, null, null,
+    1, null, 3, null,
+    1, null, null, 1
+  ]
+}
 
 function clonePatterns() {
   return JSON.parse(
@@ -144,8 +188,8 @@ function App() {
 
   const [presets, setPresets] =
     useState({
-      violin: 'SMOOTH',
-      horn: 'DEEP',
+      violin: 'Мелодия_1',
+      horn: 'Мелодия_1',
       bells: 'CRYSTAL',
       flute: 'AIR'
     })
@@ -868,6 +912,37 @@ function App() {
   }
 
   /*
+   * READY VIOLIN MELODIES
+   */
+
+  function selectViolinMelody(melodyName) {
+    setPresets(prev => ({
+      ...prev,
+      violin: melodyName
+    }))
+
+    patterns.current.violin = [
+      ...VIOLIN_MELODIES[melodyName]
+    ]
+
+    forceUpdate(value => value + 1)
+  }
+
+
+  function selectHornMelody(melodyName) {
+    setPresets(prev => ({
+      ...prev,
+      horn: melodyName
+    }))
+
+    patterns.current.horn = [
+      ...HORN_MELODIES[melodyName]
+    ]
+
+    forceUpdate(value => value + 1)
+  }
+
+  /*
    * PRESETS
    */
 
@@ -1264,13 +1339,15 @@ function App() {
                   )
                 }
 
-                onPresetChange={
-                  value =>
-                    applyPreset(
-                      instrument.id,
-                      value
-                    )
-                }
+                onPresetChange={value => {
+                  if (instrument.id === 'violin') {
+                    selectViolinMelody(value)
+                  } else if (instrument.id === 'horn') {
+                    selectHornMelody(value)
+                  } else {
+                    applyPreset(instrument.id, value)
+                  }
+                }}
 
                 onSpeedChange={
                   value =>
