@@ -1,440 +1,645 @@
-* {
-  box-sizing: border-box;
+@font-face {
+  font-family: 'Alumni Sans';
+  src: url('../fonts/AlumniSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alumni Sans';
+  src: url('../fonts/AlumniSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alumni Sans';
+  src: url('../fonts/AlumniSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alumni Sans';
+  src: url('../fonts/AlumniSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BUSE';
+  src: url('../fonts/buse.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-html,
-body,
-#root {
-  margin: 0;
-  min-height: 100%;
+:root {
+  --black: #000000;
+  --yellow: #F6FF00;
+  --mint: #03FD97;
+  --font-ui: 'Alumni Sans', 'Arial Narrow', sans-serif;
 }
 
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; width: 100%; }
 body {
-  background: #fff;
-  color: #000;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  background: var(--black);
+  color: var(--yellow);
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
-
-button,
-select,
-input {
-  font: inherit;
-}
-
-button {
-  color: #000;
-  background: #fff;
-}
+button, select, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 1px solid var(--mint); outline-offset: 3px; }
 
 .app {
   width: 100%;
   min-height: 100vh;
-
-  padding: 24px;
+  padding: 1.15vw 2.25vw 3vw;
+  background: var(--black);
 }
 
-/* HEADER */
-
+/* Header */
 .header {
+  position: relative;
   display: flex;
-
-  justify-content: space-between;
   align-items: center;
-
-  border: 2px solid #000;
-
-  padding: 18px 20px;
-
-  margin-bottom: 24px;
+  justify-content: space-between;
+  min-height: 3vw;
+  margin-bottom: 5.85vw;
 }
-
+.brand-block {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
 .header h1 {
   margin: 0;
-
-  font-size: 28px;
-  font-weight: 700;
-
-  letter-spacing: 0.08em;
+  color: var(--yellow);
+  font-family: 'BUSE', Impact, sans-serif;
+  font-size: clamp(28px, 3.34vw, 64px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .015em;
 }
-
-.audio-status {
-  margin-top: 8px;
-
-  font-size: 9px;
-
-  letter-spacing: 0.18em;
+.audio-status { display: none; }
+.main-button, .reset-button {
+  width: 7.5vw;
+  min-width: 72px;
+  height: 2.73vw;
+  min-height: 27px;
+  padding: 0 .3vw;
+  border: 1px solid var(--yellow);
+  border-radius: 0;
+  font-family: var(--font-ui);
+  font-size: clamp(14px, 1.05vw, 20px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .03em;
 }
+.reset-button { background: var(--black); color: var(--yellow); }
+.main-button { background: var(--yellow); color: var(--black); }
+.main-button:hover, .reset-button:hover { box-shadow: 0 0 0 1px var(--yellow); }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.main-button,
-.reset-button {
-  min-width: 100px;
-  height: 42px;
-
-  border: 2px solid #000;
-
-  background: #fff;
-
-  cursor: pointer;
-
-  font-size: 13px;
-  font-weight: 700;
-
-  letter-spacing: 0.08em;
-}
-
-.main-button:hover,
-.reset-button:hover {
-  background: #000;
-  color: #fff;
-}
-
-/* INSTRUMENT LAYOUT */
-
+/* Two-column instrument grid */
 .instrument-layout {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  border-left: 2px solid #000;
-  border-top: 2px solid #000;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 4.69vw;
+  row-gap: 7.8vw;
+  width: 100%;
 }
-
 .instrument {
   min-width: 0;
-
-  padding: 18px;
-
-  border-right: 2px solid #000;
-  border-bottom: 2px solid #000;
+  padding: 0;
+  border: 0;
+  color: var(--yellow);
+  transition: opacity .15s ease;
 }
-
-/* TITLES */
-
-.instrument-title,
-.drum-title {
+.instrument.is-off .cell.active .note-dot,
+.drums.is-off .drum-cell.active .note-dot { opacity: .5; }
+.instrument-topline {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 18px;
+  gap: 1vw;
+  min-height: 1.9vw;
 }
-
-.instrument h2,
-.drum-header h2 {
-  margin: 0;
-
-  font-size: 20px;
-  font-weight: 700;
-
-  letter-spacing: 0.05em;
+.melody-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: .65vw;
+  min-width: 0;
+  color: var(--yellow);
 }
-
-.power-button {
-  min-width: 48px;
-  height: 28px;
-
-  border: 1px solid #000;
-
-  background: #fff;
-
+.melody-picker select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 10vw;
+  min-width: 95px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--yellow);
+  font-family: var(--font-ui);
+  font-size: clamp(16px, 1.05vw, 20px);
+  font-weight: 500;
   cursor: pointer;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  letter-spacing: 0.08em;
+}
+.melody-picker select option { background: var(--black); color: var(--yellow); }
+.melody-triangle {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-left: .39vw solid transparent;
+  border-right: .39vw solid transparent;
+  border-top: .55vw solid var(--yellow);
+}
+.power-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.875vw;
+  height: 1.875vw;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: 1px solid var(--yellow);
+  border-radius: 0;
+  background: var(--black);
+  color: var(--yellow);
+  font-family: var(--font-ui);
+  font-size: clamp(14px, 1.05vw, 20px);
+  font-weight: 500;
+}
+.power-button.active { background: var(--yellow); color: var(--black); }
+.instrument-name {
+  margin: .16vw 0 0;
+  color: var(--mint);
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: clamp(28px, 3.75vw, 48px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .025em;
 }
 
-.power-button.active {
-  background: #000;
-  color: #fff;
-}
-
-.power-button:hover {
-  background: #000;
-  color: #fff;
-}
-
-/* CONTROLS */
-
+/* Segmented speed and volume meters; invisible range input remains interactive */
 .instrument-controls {
   display: grid;
-
-  grid-template-columns:
-    1fr 1fr 1fr;
-
-  gap: 8px;
-
-  margin-bottom: 18px;
+  grid-template-columns: 13.36vw 13.36vw;
+  justify-content: space-between;
+  column-gap: 0;
+  margin-top: .1vw;
+  margin-bottom: .78vw;
 }
-
-.instrument-controls select {
+.slider-control { display: flex; min-width: 0; flex-direction: column; gap: .2vw; }
+.slider-control > span {
+  color: var(--mint);
+  font-family: var(--font-ui);
+  font-size: clamp(12px, .73vw, 14px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .04em;
+}
+.meter {
+  position: relative;
   width: 100%;
-  height: 34px;
-
-  border: 1px solid #000;
-
-  background: #fff;
-
-  padding: 0 8px;
-
-  font-size: 11px;
-
-  text-transform: uppercase;
+  height: .99vw;
+  min-height: 13px;
+  border: 1px solid var(--mint);
+  background: transparent;
+  padding: .08vw;
+  overflow: hidden;
 }
-
-.slider-control {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 3px;
-}
-
-.slider-control span {
-  font-size: 8px;
-
-  letter-spacing: 0.12em;
-}
-
-.slider-control input[type='range'] {
+.meter-bars { display: flex; align-items: center; gap: .26vw; width: 100%; height: 100%; pointer-events: none; }
+.meter-bars i { display: block; flex: 0 0 .21vw; height: 100%; background: transparent; }
+.meter-bars i.lit { background: var(--mint); }
+.meter input[type='range'] {
+  position: absolute;
+  inset: -5px 0 -5px;
+  z-index: 2;
   width: 100%;
-  height: 24px;
-
+  height: calc(100% + 10px);
   margin: 0;
-
-  accent-color: #000;
-
-  cursor: pointer;
+  opacity: 0;
+  cursor: ew-resize;
 }
 
-/* MELODY GRID */
-
+/* Melody cells and concentric note marks */
 .melody-grid {
   display: grid;
-
-  grid-template-rows:
-    repeat(4, 1fr);
-
+  grid-template-rows: repeat(4, minmax(1.5vw, 1fr));
   width: 100%;
-
-  border-left: 1px solid #000;
-  border-top: 1px solid #000;
+  border-left: 1px solid var(--mint);
+  border-top: 1px solid var(--mint);
 }
-
-.melody-row {
-  display: grid;
-
-  grid-template-columns:
-    repeat(16, 1fr);
-}
-
+.melody-row { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); }
 .cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
-
   aspect-ratio: 1 / 1;
-
   padding: 0;
-
   border: 0;
-
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-
-  background: #fff;
-
-  cursor: pointer;
+  border-right: 1px solid var(--mint);
+  border-bottom: 1px solid var(--mint);
+  background: transparent;
+  color: var(--yellow);
 }
+.cell:hover { background: rgba(3, 253, 151, .08); }
+.cell.playing { box-shadow: inset 0 0 0 1px var(--yellow); }
+.note-dot { position: relative; display: block; width: 1.8vw; height: 1.8vw; min-width: 23px; min-height: 23px; pointer-events: none; }
+.note-dot::before, .note-dot::after, .note-dot i { content: ''; position: absolute; left: 50%; top: 50%; display: block; border-radius: 50%; transform: translate(-50%, -50%); }
+.note-dot::before { width: .86vw; height: .86vw; min-width: 11px; min-height: 11px; background: var(--yellow); border: 0; }
+.note-dot::after { width: 1.17vw; height: 1.17vw; min-width: 15px; min-height: 15px; border: 1px solid var(--yellow); }
+.note-dot i:nth-child(1) { width: 1.48vw; height: 1.48vw; border: .5px solid var(--yellow); }
+.note-dot i:nth-child(2) { width: 1.8vw; height: 1.8vw; border: .2px solid var(--yellow); }
+.note-dot i:nth-child(3) { display: none; }
 
-.cell:hover {
-  background: #eee;
-}
-
-.cell.active {
-  background: #000;
-}
-
-.cell.playing {
-  outline: 2px solid #000;
-  outline-offset: -2px;
-}
-
-/* DRUMS */
-
+/* Drums span both columns */
 .drums {
   width: 100%;
-
-  margin-top: 24px;
-
-  padding: 18px;
-
-  border: 2px solid #000;
+  margin-top: 7.8vw;
+  padding: 0;
+  border: 0;
+  color: var(--yellow);
 }
-
-.drum-header {
+.drum-header { display: flex; align-items: center; justify-content: space-between; gap: 2vw; margin-bottom: 1.1vw; }
+.drum-title { display: flex; align-items: center; gap: 1.5vw; min-width: 0; }
+.drum-title h2 {
+  margin: 0;
+  color: var(--mint);
+  font-family: var(--font-ui);
+  font-size: clamp(28px, 3.75vw, 48px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .025em;
+}
+.drum-controls { display: grid; grid-template-columns: minmax(9vw, 1fr) minmax(9vw, 1fr); gap: 2vw; width: 24vw; }
+.drum-row { margin-bottom: .32vw; }
+.drum-row:last-child { margin-bottom: 0; }
+.drum-grid { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); width: 100%; border-left: 1px solid var(--mint); border-top: 1px solid var(--mint); }
+.drum-cell {
   display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  aspect-ratio: 8 / 1;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--mint);
+  border-bottom: 1px solid var(--mint);
+  background: transparent;
+}
+.drum-cell:hover { background: rgba(3, 253, 151, .08); }
+.drum-cell.playing { box-shadow: inset 0 0 0 1px var(--yellow); }
+.drum-dot { transform: scale(.9); }
 
-  align-items: flex-end;
-  justify-content: space-between;
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 1.2vw;
+  width: 100%;
+  margin-top: 7.8vw;
+  color: var(--mint);
+  font-family: var(--font-ui);
+  font-size: clamp(16px, 1.05vw, 20px);
+  font-weight: 500;
+  line-height: 1;
+}
+.footer-line { flex: 1 1 auto; border-top: 1px dashed var(--mint); height: 0; }
 
-  margin-bottom: 18px;
+@media (max-width: 700px) {
+  .app { padding: 18px 16px 28px; }
+  .header { min-height: 70px; margin-bottom: 58px; }
+  .brand-block { top: 6px; }
+  .header h1 { font-size: clamp(20px, 5vw, 32px); }
+  .main-button, .reset-button { min-width: 58px; width: auto; padding: 0 8px; min-height: 28px; font-size: 14px; }
+  .instrument-layout { grid-template-columns: minmax(0, 1fr); row-gap: 42px; }
+  .instrument-topline { min-height: 30px; }
+  .melody-picker { gap: 8px; }
+  .melody-picker select { width: 130px; font-size: 17px; }
+  .melody-triangle { border-left-width: 6px; border-right-width: 6px; border-top-width: 8px; }
+  .power-button { width: 30px; height: 30px; }
+  .instrument-name, .drum-title h2 { font-size: 34px; }
+  .instrument-controls { column-gap: 24px; margin: 8px 0 12px; }
+  .meter { height: 16px; padding: 2px; }
+  .meter-bars { gap: 3px; }
+  .meter-bars i { flex-basis: 4px; }
+  .melody-grid { grid-template-rows: repeat(4, minmax(22px, 1fr)); }
+  .note-dot { width: 18px; height: 18px; }
+  .note-dot::before { width: 7px; height: 7px; }
+  .note-dot::after { width: 11px; height: 11px; }
+  .note-dot i:nth-child(1) { width: 14px; height: 14px; }
+  .note-dot i:nth-child(2) { width: 17px; height: 17px; }
+  .drums { margin-top: 44px; }
+  .drum-header { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 12px; }
+  .drum-title { width: 100%; justify-content: space-between; gap: 8px; }
+  .drum-controls { width: 100%; gap: 24px; }
+  .drum-cell { aspect-ratio: 3 / 1; }
+  .footer { margin-top: 48px; gap: 8px; font-size: 16px; }
 }
 
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+
+/* DRUM MACHINE follows the same instrument layout and note grid */
+.drums {
+  margin-top: clamp(48px, 7.8vw, 150px);
+  width: 100%;
+}
+.drum-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1vw;
+  min-height: 1.9vw;
+}
+.drum-instrument-name {
+  margin: clamp(3px, .16vw, 6px) 0 0;
+  color: var(--mint);
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: clamp(30px, 3.75vw, 76px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .025em;
+}
 .drum-controls {
   display: grid;
-
-  grid-template-columns:
-    180px 180px;
-
-  gap: 12px;
-}
-
-.drum-controls input {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  justify-content: space-between;
+  column-gap: 4.69vw;
   width: 100%;
-
-  accent-color: #000;
-
-  cursor: pointer;
+  margin-top: clamp(8px, .65vw, 14px);
+  margin-bottom: clamp(12px, .78vw, 18px);
 }
-
-.drum-row {
-  margin-bottom: 6px;
+.drum-melody-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  border-left: 1px solid var(--mint);
+  border-top: 1px solid var(--mint);
 }
-
-.drum-row:last-child {
-  margin-bottom: 0;
-}
-
+.drum-row { margin: 0; }
 .drum-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(16, 1fr);
-
+  grid-template-columns: repeat(16, minmax(0, 1fr));
   width: 100%;
-
-  border-left: 1px solid #000;
-  border-top: 1px solid #000;
-}
-
-.drum-cell {
-  min-width: 0;
-
-  aspect-ratio: 4 / 1;
-
-  padding: 0;
-
   border: 0;
+}
+.drum-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
+  border: 0;
+  border-right: 1px solid var(--mint);
+  border-bottom: 1px solid var(--mint);
+  background: transparent;
+}
+.drum-dot { transform: none; }
+.drums.is-off .drum-cell.active .note-dot { opacity: .5; }
 
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
+/* Fluid sizing: elements scale with the viewport without becoming unreadably small. */
+.header h1 { font-size: clamp(26px, 3.34vw, 84px); }
+.main-button, .reset-button { font-size: clamp(14px, 1.05vw, 28px); }
+.melody-picker select { font-size: clamp(15px, 1.05vw, 28px); }
+.power-button { font-size: clamp(14px, 1.05vw, 28px); }
+.instrument-name, .drum-instrument-name, .drum-title h2 { font-size: clamp(28px, 3.75vw, 76px); }
+.slider-control > span { font-size: clamp(12px, .73vw, 20px); }
+.footer { font-size: clamp(16px, 1.05vw, 28px); }
+.melody-grid { grid-template-rows: repeat(4, minmax(clamp(22px, 1.5vw, 44px), 1fr)); }
+.note-dot { width: clamp(23px, 1.8vw, 40px); height: clamp(23px, 1.8vw, 40px); min-width: 0; min-height: 0; }
+.note-dot::before { width: clamp(11px, .86vw, 22px); height: clamp(11px, .86vw, 22px); min-width: 0; min-height: 0; }
+.note-dot::after { width: clamp(15px, 1.17vw, 29px); height: clamp(15px, 1.17vw, 29px); min-width: 0; min-height: 0; }
+.note-dot i:nth-child(1) { width: clamp(18px, 1.48vw, 36px); height: clamp(18px, 1.48vw, 36px); }
+.note-dot i:nth-child(2) { width: clamp(23px, 1.8vw, 40px); height: clamp(23px, 1.8vw, 40px); }
+.meter { height: clamp(14px, .99vw, 24px); }
+.meter-bars { gap: clamp(3px, .26vw, 7px); }
+.meter-bars i { flex-basis: clamp(3px, .21vw, 6px); }
 
-  background: #fff;
-
-  cursor: pointer;
+@media (max-width: 700px) {
+  .drums { margin-top: 44px; }
+  .drum-topline { min-height: 30px; }
+  .drum-instrument-name { font-size: clamp(28px, 7vw, 38px); margin-top: 6px; }
+  .drum-controls { width: 100%; gap: 24px; margin: 8px 0 12px; }
+  .drum-cell { aspect-ratio: 1 / 1; }
+  .melody-grid { grid-template-rows: repeat(4, minmax(22px, 1fr)); }
+  .note-dot { width: 18px; height: 18px; }
+  .note-dot::before { width: 7px; height: 7px; }
+  .note-dot::after { width: 11px; height: 11px; }
+  .note-dot i:nth-child(1) { width: 14px; height: 14px; }
+  .note-dot i:nth-child(2) { width: 17px; height: 17px; }
 }
 
-.drum-cell:hover {
-  background: #eee;
-}
 
-.drum-cell.active {
-  background: #000;
-}
+/* Final responsive refinements: readable desktop typography and full-width meters. */
+.header h1 { font-size: clamp(38px, 4.4vw, 88px); }
+.main-button, .reset-button { font-size: clamp(17px, 1.35vw, 30px); }
+.melody-picker select { font-size: clamp(18px, 1.35vw, 30px); }
+.power-button { font-size: clamp(17px, 1.35vw, 30px); }
+.instrument-name, .drum-instrument-name, .drum-title h2 { font-size: clamp(42px, 4.2vw, 80px); }
+.slider-control > span { font-size: clamp(15px, 1.05vw, 23px); }
+.footer { font-size: clamp(19px, 1.45vw, 30px); }
+.instrument-topline, .drum-topline { min-height: clamp(30px, 2.4vw, 48px); }
+.meter { height: clamp(17px, 1.25vw, 26px); padding: 2px; }
+.meter-bars { display: flex; align-items: stretch; justify-content: space-between; gap: clamp(2px, .22vw, 5px); width: 100%; height: 100%; }
+.meter-bars i { flex: 1 1 0; min-width: 0; height: 100%; }
+.instrument-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(24px, 3.1vw, 60px); }
+.drum-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(24px, 3.1vw, 60px); }
 
-.drum-cell.playing {
-  outline: 2px solid #000;
-  outline-offset: -2px;
-}
-
-/* OFF STATE */
-
-.instrument:has(
-  .power-button:not(.active)
-) {
-  opacity: 0.45;
-}
-
-.drums:has(
-  .power-button:not(.active)
-) {
-  opacity: 0.45;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 900px) {
-  .instrument-layout {
-    grid-template-columns:
-      1fr;
-  }
+@media (min-width: 701px) {
+  .instrument-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 
 @media (max-width: 700px) {
+  /* On phones every instrument is stacked vertically in one column. */
+  .instrument-layout { display: flex; flex-direction: column; gap: 42px; }
+  .instrument { width: 100%; }
+  .instrument-controls, .drum-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 18px; }
+  .meter { height: 16px; padding: 2px; }
+  .meter-bars { gap: 2px; }
+  .meter-bars i { flex: 1 1 0; min-width: 0; }
+  .header h1 { font-size: clamp(23px, 6vw, 36px); }
+  .instrument-name, .drum-instrument-name, .drum-title h2 { font-size: clamp(30px, 8vw, 40px); }
+  .slider-control > span { font-size: 14px; }
+  .footer { font-size: 15px; }
+}
+
+
+/* FINAL DESKTOP SCALE — larger typography and stronger grid lines */
+@media (min-width: 701px) {
   .app {
-    padding: 12px;
+    padding: 1.5vw 4.9vw 3vw;
   }
 
   .header {
-    display: block;
+    min-height: 4vw;
+    margin-bottom: 5.8vw;
   }
 
   .header h1 {
-    margin-bottom: 16px;
-
-    font-size: 22px;
-  }
-
-  .header-actions {
-    width: 100%;
-
-    margin-top: 16px;
+    font-size: clamp(48px, 5vw, 96px);
   }
 
   .main-button,
   .reset-button {
-    flex: 1;
+    width: clamp(96px, 7.5vw, 150px);
+    height: clamp(35px, 2.75vw, 52px);
+    font-size: clamp(20px, 1.55vw, 30px);
+  }
+
+  .instrument-layout {
+    column-gap: 4.7vw;
+    row-gap: 7.8vw;
+  }
+
+  .instrument-topline,
+  .drum-topline {
+    min-height: clamp(38px, 3vw, 58px);
+  }
+
+  .melody-picker {
+    gap: 1vw;
+  }
+
+  .melody-picker select {
+    width: clamp(150px, 13vw, 260px);
+    font-size: clamp(21px, 1.65vw, 32px);
+  }
+
+  .melody-triangle {
+    border-left-width: clamp(7px, .55vw, 12px);
+    border-right-width: clamp(7px, .55vw, 12px);
+    border-top-width: clamp(10px, .75vw, 16px);
+  }
+
+  .power-button {
+    width: clamp(36px, 2.8vw, 54px);
+    height: clamp(36px, 2.8vw, 54px);
+    font-size: clamp(20px, 1.55vw, 30px);
+  }
+
+  .instrument-name,
+  .drum-instrument-name,
+  .drum-title h2 {
+    font-size: clamp(42px, 3.4vw, 68px);
   }
 
   .instrument-controls {
-    grid-template-columns:
-      1fr;
+    margin-top: .45vw;
+    margin-bottom: 1.1vw;
+    column-gap: clamp(30px, 3.1vw, 64px);
   }
 
-  .drum-header {
-    display: block;
+  .slider-control {
+    gap: .35vw;
+  }
+
+  .slider-control > span {
+    font-size: clamp(17px, 1.25vw, 25px);
+  }
+
+  .meter {
+    height: clamp(19px, 1.5vw, 30px);
+    padding: 2px;
+  }
+
+  .meter-bars {
+    gap: clamp(3px, .28vw, 6px);
+  }
+
+  .meter-bars i {
+    min-width: 2px;
+  }
+
+  .melody-grid {
+    grid-template-rows: repeat(4, minmax(clamp(32px, 2.6vw, 52px), 1fr));
+    border-width: 1.5px 0 0 1.5px;
+  }
+
+  .cell {
+    border-right-width: 1.5px;
+    border-bottom-width: 1.5px;
+  }
+
+  .note-dot {
+    width: clamp(28px, 2.3vw, 46px);
+    height: clamp(28px, 2.3vw, 46px);
+  }
+
+  .note-dot::before {
+    width: clamp(15px, 1.15vw, 23px);
+    height: clamp(15px, 1.15vw, 23px);
+  }
+
+  .note-dot::after {
+    width: clamp(20px, 1.55vw, 31px);
+    height: clamp(20px, 1.55vw, 31px);
+    border-width: 1.2px;
+  }
+
+  .note-dot i:nth-child(1) {
+    width: clamp(24px, 1.95vw, 39px);
+    height: clamp(24px, 1.95vw, 39px);
+    border-width: 1px;
+  }
+
+  .note-dot i:nth-child(2) {
+    width: clamp(28px, 2.3vw, 46px);
+    height: clamp(28px, 2.3vw, 46px);
+    border-width: .6px;
+  }
+
+  .drums {
+    margin-top: clamp(70px, 8vw, 150px);
   }
 
   .drum-controls {
-    grid-template-columns:
-      1fr 1fr;
-
-    margin-top: 12px;
+    margin-top: clamp(12px, .8vw, 18px);
+    margin-bottom: clamp(16px, 1.1vw, 24px);
   }
 
-  .melody-row {
-    min-width: 480px;
+  .drum-melody-grid {
+    border-width: 1.5px 0 0 1.5px;
   }
 
-  .drum-grid {
-    min-width: 480px;
+  .drum-cell {
+    border-right-width: 1.5px;
+    border-bottom-width: 1.5px;
   }
 
-  .instrument,
-  .drums {
-    overflow-x: auto;
+  .footer {
+    margin-top: clamp(70px, 7.8vw, 145px);
+    font-size: clamp(22px, 1.65vw, 32px);
   }
+}
+
+/* Keep the phone layout stacked and comfortable to read. */
+@media (max-width: 700px) {
+  .header h1 { font-size: clamp(23px, 6vw, 36px); }
+  .instrument-name,
+  .drum-instrument-name,
+  .drum-title h2 { font-size: clamp(30px, 8vw, 40px); }
+  .melody-grid { border-width: 1px 0 0 1px; }
+  .cell { border-right-width: 1px; border-bottom-width: 1px; }
+  .note-dot { width: 22px; height: 22px; }
+  .note-dot::before { width: 9px; height: 9px; }
+  .note-dot::after { width: 14px; height: 14px; }
+  .note-dot i:nth-child(1) { width: 18px; height: 18px; }
+  .note-dot i:nth-child(2) { width: 22px; height: 22px; }
 }

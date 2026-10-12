@@ -1355,43 +1355,24 @@ function App() {
     <div className="app">
 
       <header className="header">
+        <button
+          className="reset-button"
+          onClick={resetEverything}
+        >
+          RESET
+        </button>
 
-        <div>
-          <h1>
-            CHRISTMAS SYNTH
-          </h1>
-
-          <div className="audio-status">
-            {audioReady
-              ? 'LET IT SNOW'
-              : 'LET IT SNOW'}
-          </div>
+        <div className="brand-block">
+          <h1>CHRISTMAS SYNTH</h1>
+          <div className="audio-status">LET IT SNOW</div>
         </div>
 
-        <div className="header-actions">
-
-          <button
-            className="main-button"
-            onClick={
-              togglePlayback
-            }
-          >
-            {playing
-              ? 'STOP'
-              : 'START'}
-          </button>
-
-          <button
-            className="reset-button"
-            onClick={
-              resetEverything
-            }
-          >
-            RESET
-          </button>
-
-        </div>
-
+        <button
+          className="main-button"
+          onClick={togglePlayback}
+        >
+          {playing ? 'STOP' : 'START'}
+        </button>
       </header>
 
       <main>
@@ -1551,6 +1532,14 @@ function App() {
 
       </main>
 
+      <footer className="footer">
+        <span>Буракова Ольга</span>
+        <span className="footer-line" aria-hidden="true" />
+        <span>2026</span>
+        <span className="footer-line" aria-hidden="true" />
+        <span>БП25ДЗ12</span>
+      </footer>
+
     </div>
   )
 }
@@ -1574,93 +1563,52 @@ function Instrument({
   onCellClick
 }) {
   return (
-    <section className="instrument">
+    <section className={`instrument ${enabled ? 'is-on' : 'is-off'}`}>
 
-      <div className="instrument-title">
-
-        <h2>
-          {instrument.title}
-        </h2>
+      <div className="instrument-topline">
+        <label className="melody-picker">
+          <span className="melody-triangle" aria-hidden="true" />
+          <select
+            value={preset}
+            aria-label={`${instrument.title}: выбор мелодии`}
+            onChange={event => onPresetChange(event.target.value)}
+          >
+            {instrument.presets.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </label>
 
         <button
-          className={
-            enabled
-              ? 'power-button active'
-              : 'power-button'
-          }
+          className={`power-button ${enabled ? 'active' : ''}`}
           onClick={onToggle}
         >
-          {enabled
-            ? 'ON'
-            : 'OFF'}
+          {enabled ? 'ON' : 'OFF'}
         </button>
-
       </div>
 
+      <h2 className="instrument-name">{instrument.title}</h2>
+
       <div className="instrument-controls">
-
-        <select
-          value={preset}
-          onChange={event =>
-            onPresetChange(
-              event.target.value
-            )
-          }
-        >
-          {instrument.presets.map(
-            option => (
-              <option
-                key={option}
-                value={option}
-              >
-                {option}
-              </option>
-            )
-          )}
-        </select>
-
-        <label className="slider-control">
-
-          <span>
-            SPEED
-          </span>
-
-          <input
-            type="range"
-            min="0.5"
-            max="1.5"
-            step="0.05"
-            value={speed}
-            onChange={event =>
-              onSpeedChange(
-                event.target.value
-              )
-            }
-          />
-
+        <label className="slider-control speed-control">
+          <span>SPEED</span>
+          <div className="meter" style={{ '--meter-fill': `${((speed - 0.5) / 1) * 100}%` }}>
+            <div className="meter-bars" aria-hidden="true">
+              {Array.from({ length: 32 }, (_, i) => <i key={i} className={i < Math.round(((speed - 0.5) / 1) * 32) ? 'lit' : ''} />)}
+            </div>
+            <input type="range" min="0.5" max="1.5" step="0.05" value={speed} aria-label="Speed" onChange={event => onSpeedChange(event.target.value)} />
+          </div>
         </label>
 
-        <label className="slider-control">
-
-          <span>
-            VOLUME
-          </span>
-
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={event =>
-              onVolumeChange(
-                event.target.value
-              )
-            }
-          />
-
+        <label className="slider-control volume-control">
+          <span>VOLUME</span>
+          <div className="meter" style={{ '--meter-fill': `${volume * 100}%` }}>
+            <div className="meter-bars" aria-hidden="true">
+              {Array.from({ length: 32 }, (_, i) => <i key={i} className={i < Math.round(volume * 32) ? 'lit' : ''} />)}
+            </div>
+            <input type="range" min="0" max="1" step="0.01" value={volume} aria-label="Volume" onChange={event => onVolumeChange(event.target.value)} />
+          </div>
         </label>
-
       </div>
 
       <div className="melody-grid">
@@ -1687,24 +1635,16 @@ function Instrument({
                   return (
                     <button
                       key={step}
+                      aria-label={`Ряд ${row + 1}, шаг ${step + 1}`}
                       className={[
                         'cell',
-
-                        active
-                          ? 'active'
-                          : '',
-
-                        isPlaying
-                          ? 'playing'
-                          : ''
+                        active ? 'active' : '',
+                        isPlaying ? 'playing' : ''
                       ].join(' ')}
-                      onClick={() =>
-                        onCellClick(
-                          row,
-                          step
-                        )
-                      }
-                    />
+                      onClick={() => onCellClick(row, step)}
+                    >
+                      {active && <span className="note-dot" aria-hidden="true"><i /><i /><i /></span>}
+                    </button>
                   )
                 }
               )}
@@ -1737,135 +1677,44 @@ function DrumMachine({
   onCellClick
 }) {
   return (
-    <section className="drums">
-
-      <div className="drum-header">
-
-        <div className="drum-title">
-
-          <h2>
-            DRUM MACHINE
-          </h2>
-
-          <select
-            value={preset}
-            aria-label="Выбор ритма барабанов"
-            onChange={event =>
-              onPresetChange(event.target.value)
-            }
-          >
+    <section className={`drums ${enabled ? 'is-on' : 'is-off'}`}>
+      <div className="drum-topline">
+        <label className="melody-picker">
+          <span className="melody-triangle" aria-hidden="true" />
+          <select value={preset} aria-label="Выбор ритма барабанов" onChange={event => onPresetChange(event.target.value)}>
             <option value="Мелодия_1">Мелодия_1</option>
             <option value="Мелодия_2">Мелодия_2</option>
           </select>
-
-          <button
-            className={
-              enabled
-                ? 'power-button active'
-                : 'power-button'
-            }
-            onClick={onToggle}
-          >
-            {enabled
-              ? 'ON'
-              : 'OFF'}
-          </button>
-
-        </div>
-
-        <div className="drum-controls">
-
-          <label className="slider-control">
-
-            <span>
-              SPEED
-            </span>
-
-            <input
-              type="range"
-              min="0.5"
-              max="1.5"
-              step="0.05"
-              value={speed}
-              onChange={event =>
-                onSpeedChange(
-                  event.target.value
-                )
-              }
-            />
-
-          </label>
-
-          <label className="slider-control">
-
-            <span>
-              VOLUME
-            </span>
-
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={event =>
-                onVolumeChange(
-                  event.target.value
-                )
-              }
-            />
-
-          </label>
-
-        </div>
-
+        </label>
+        <button className={`power-button ${enabled ? 'active' : ''}`} onClick={onToggle}>
+          {enabled ? 'ON' : 'OFF'}
+        </button>
       </div>
 
-      <DrumRow
-        pattern={
-          pattern.kick
-        }
-        currentStep={
-          currentStep
-        }
-        onClick={step =>
-          onCellClick(
-            'kick',
-            step
-          )
-        }
-      />
+      <h2 className="drum-instrument-name">DRUM MACHINE</h2>
 
-      <DrumRow
-        pattern={
-          pattern.snare
-        }
-        currentStep={
-          currentStep
-        }
-        onClick={step =>
-          onCellClick(
-            'snare',
-            step
-          )
-        }
-      />
+      <div className="drum-controls">
+        <label className="slider-control speed-control">
+          <span>SPEED</span>
+          <div className="meter" style={{ '--meter-fill': `${((speed - 0.5) / 1) * 100}%` }}>
+            <div className="meter-bars" aria-hidden="true">{Array.from({ length: 32 }, (_, i) => <i key={i} className={i < Math.round(((speed - 0.5) / 1) * 32) ? 'lit' : ''} />)}</div>
+            <input type="range" min="0.5" max="1.5" step="0.05" value={speed} aria-label="Drum speed" onChange={event => onSpeedChange(event.target.value)} />
+          </div>
+        </label>
+        <label className="slider-control volume-control">
+          <span>VOLUME</span>
+          <div className="meter" style={{ '--meter-fill': `${volume * 100}%` }}>
+            <div className="meter-bars" aria-hidden="true">{Array.from({ length: 32 }, (_, i) => <i key={i} className={i < Math.round(volume * 32) ? 'lit' : ''} />)}</div>
+            <input type="range" min="0" max="1" step="0.01" value={volume} aria-label="Drum volume" onChange={event => onVolumeChange(event.target.value)} />
+          </div>
+        </label>
+      </div>
 
-      <DrumRow
-        pattern={
-          pattern.hat
-        }
-        currentStep={
-          currentStep
-        }
-        onClick={step =>
-          onCellClick(
-            'hat',
-            step
-          )
-        }
-      />
-
+      <div className="drum-melody-grid">
+        <DrumRow pattern={pattern.kick} currentStep={currentStep} onClick={step => onCellClick('kick', step)} />
+        <DrumRow pattern={pattern.snare} currentStep={currentStep} onClick={step => onCellClick('snare', step)} />
+        <DrumRow pattern={pattern.hat} currentStep={currentStep} onClick={step => onCellClick('hat', step)} />
+      </div>
     </section>
   )
 }
@@ -1887,21 +1736,16 @@ function DrumRow({
           (_, step) => (
             <button
               key={step}
+              aria-label={`Ударный шаг ${step + 1}`}
               className={[
                 'drum-cell',
-
-                pattern[step]
-                  ? 'active'
-                  : '',
-
-                currentStep === step
-                  ? 'playing'
-                  : ''
+                pattern[step] ? 'active' : '',
+                currentStep === step ? 'playing' : ''
               ].join(' ')}
-              onClick={() =>
-                onClick(step)
-              }
-            />
+              onClick={() => onClick(step)}
+            >
+              {Boolean(pattern[step]) && <span className="note-dot drum-dot" aria-hidden="true"><i /><i /><i /></span>}
+            </button>
           )
         )}
 
