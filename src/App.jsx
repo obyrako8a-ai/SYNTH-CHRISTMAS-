@@ -70,8 +70,7 @@ const INSTRUMENTS = [
     title: 'VIOLIN',
     presets: [
       'Мелодия_1',
-      'Мелодия_2',
-      'Мелодия_3'
+      'Мелодия_2'
     ]
   },
 
@@ -89,9 +88,9 @@ const INSTRUMENTS = [
     id: 'bells',
     title: 'BELLS',
     presets: [
-      'CRYSTAL',
-      'BRIGHT',
-      'SOFT'
+      'Мелодия_1',
+      'Мелодия_2',
+      'Мелодия_3'
     ]
   },
 
@@ -99,9 +98,8 @@ const INSTRUMENTS = [
     id: 'flute',
     title: 'FLUTE',
     presets: [
-      'AIR',
-      'GLASS',
-      'BREATH'
+      'Мелодия_1',
+      'Мелодия_2'
     ]
   }
 ]
@@ -116,13 +114,6 @@ const VIOLIN_MELODIES = {
     0, null, 3, 2,
     3, null, 0, 1,
     0, null, 2, 2
-  ],
-
-  'Мелодия_3': [
-    0, null, 2, null,
-    1, null, 3, null,
-    2, null, 0, null,
-    1, null, 3, null
   ]
 }
 
@@ -148,6 +139,74 @@ const HORN_MELODIES = {
     1, null, 3, null,
     1, null, null, 1
   ]
+}
+
+const BELLS_MELODIES = {
+  // Мелодия_1 — исходное расположение нот BELLS без изменений.
+  'Мелодия_1': [...INITIAL_PATTERNS.bells],
+
+  // Мелодия_2 — расположение с первого фото.
+  // Ряды сверху вниз: 0, 1, 2, 3; столбцы — шаги 1–16.
+  'Мелодия_2': [
+    1, null, 1, null,
+    1, null, 1, 2,
+    3, 2, 1, null,
+    1, null, 1, null
+  ],
+
+  // Мелодия_3 — расположение со второго фото; нота второго ряда
+  // перенесена с 12-го шага на 13-й.
+  'Мелодия_3': [
+    3, 2, 1, 0,
+    1, 2, null, null,
+    1, null, 3, null,
+    1, null, null, 1
+  ]
+}
+
+const FLUTE_MELODIES = {
+  // Первая мелодия сохраняет исходное расположение нот FLUTE.
+  'Мелодия_1': [...INITIAL_PATTERNS.flute],
+
+  // Вторая мелодия по фото: активные клетки распределены по четырём рядам.
+  // На каждом шаге может звучать одна нота.
+  'Мелодия_2': [
+    1, 1, 1, null,
+    1, 1, 1, 3,
+    1, 3, 1, null,
+    1, 1, 1, null
+  ]
+}
+
+const DRUM_MELODIES = {
+  'Мелодия_1': {
+    kick: [...INITIAL_PATTERNS.kick],
+    snare: [...INITIAL_PATTERNS.snare],
+    hat: [...INITIAL_PATTERNS.hat]
+  },
+
+  // Ритм по фото: верхняя и нижняя дорожки одинаковые,
+  // средняя дорожка имеет свой рисунок.
+  'Мелодия_2': {
+    kick: [
+      1, 0, 1, 0,
+      1, 0, 1, 0,
+      1, 1, 1, 0,
+      1, 1, 1, 0
+    ],
+    snare: [
+      1, 1, 1, 0,
+      1, 1, 1, 0,
+      1, 0, 1, 0,
+      1, 0, 1, 0
+    ],
+    hat: [
+      1, 0, 1, 0,
+      1, 0, 1, 0,
+      1, 1, 1, 0,
+      1, 1, 1, 0
+    ]
+  }
 }
 
 function clonePatterns() {
@@ -190,8 +249,9 @@ function App() {
     useState({
       violin: 'Мелодия_1',
       horn: 'Мелодия_1',
-      bells: 'CRYSTAL',
-      flute: 'AIR'
+      bells: 'Мелодия_1',
+      flute: 'Мелодия_1',
+      drums: 'Мелодия_1'
     })
 
   const [enabled, setEnabled] =
@@ -942,6 +1002,47 @@ function App() {
     forceUpdate(value => value + 1)
   }
 
+  function selectBellsMelody(melodyName) {
+    setPresets(prev => ({
+      ...prev,
+      bells: melodyName
+    }))
+
+    patterns.current.bells = [
+      ...BELLS_MELODIES[melodyName]
+    ]
+
+    forceUpdate(value => value + 1)
+  }
+
+  function selectFluteMelody(melodyName) {
+    setPresets(prev => ({
+      ...prev,
+      flute: melodyName
+    }))
+
+    patterns.current.flute = [
+      ...FLUTE_MELODIES[melodyName]
+    ]
+
+    forceUpdate(value => value + 1)
+  }
+
+  function selectDrumMelody(melodyName) {
+    setPresets(prev => ({
+      ...prev,
+      drums: melodyName
+    }))
+
+    const melody = DRUM_MELODIES[melodyName]
+
+    patterns.current.kick = [...melody.kick]
+    patterns.current.snare = [...melody.snare]
+    patterns.current.hat = [...melody.hat]
+
+    forceUpdate(value => value + 1)
+  }
+
   /*
    * PRESETS
    */
@@ -1154,6 +1255,15 @@ function App() {
     patterns.current =
       clonePatterns()
 
+    setPresets(prev => ({
+      ...prev,
+      violin: 'Мелодия_1',
+      horn: 'Мелодия_1',
+      bells: 'Мелодия_1',
+      flute: 'Мелодия_1',
+      drums: 'Мелодия_1'
+    }))
+
     setPlaying(false)
     setCurrentStep(-1)
 
@@ -1344,6 +1454,10 @@ function App() {
                     selectViolinMelody(value)
                   } else if (instrument.id === 'horn') {
                     selectHornMelody(value)
+                  } else if (instrument.id === 'bells') {
+                    selectBellsMelody(value)
+                  } else if (instrument.id === 'flute') {
+                    selectFluteMelody(value)
                   } else {
                     applyPreset(instrument.id, value)
                   }
@@ -1382,6 +1496,14 @@ function App() {
         <DrumMachine
           pattern={
             patterns.current
+          }
+
+          preset={
+            presets.drums
+          }
+
+          onPresetChange={
+            selectDrumMelody
           }
 
           speed={
@@ -1603,6 +1725,8 @@ function Instrument({
 
 function DrumMachine({
   pattern,
+  preset,
+  onPresetChange,
   speed,
   volume,
   enabled,
@@ -1622,6 +1746,17 @@ function DrumMachine({
           <h2>
             DRUM MACHINE
           </h2>
+
+          <select
+            value={preset}
+            aria-label="Выбор ритма барабанов"
+            onChange={event =>
+              onPresetChange(event.target.value)
+            }
+          >
+            <option value="Мелодия_1">Мелодия_1</option>
+            <option value="Мелодия_2">Мелодия_2</option>
+          </select>
 
           <button
             className={
